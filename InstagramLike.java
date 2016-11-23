@@ -12,7 +12,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class LoginPage {
+public class InstagramLike {
 
 	static WebDriver driver;
 	static WebDriverWait wait;

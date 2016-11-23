@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,17 +28,40 @@ public class LoginPage {
 		
 		setup();
 		loginToInstagram();
+		
 		//TODO change this thread.sleep to instead wait for page to load
 		Thread.sleep(5000);
-		
-		List<WebElement> articlesList = driver.findElements(By.tagName("article"));
-		likePicture(articlesList.get(0));// like the first picture
+	
+		likePictures(getUsers());		
 	}
 	
-	private static void likePicture(WebElement element) {
-		action.doubleClick(element).perform();
-		//TODO complete this
+	private static void likePictures(ArrayList<String> users) {
+		List<WebElement> articlesList = driver.findElements(By.tagName("article"));
+		if (articlesList.isEmpty()) {
+			exitWithErrorMessage("No recent feed found, follow some users before using this bot.");
+			return;
+		}
+		for (WebElement element: articlesList) {
+			String username = element.findElements(By.tagName("a")).get(1).getText();// the second index of the <a> tag elements is the username
+			if (users.contains(username))
+				action.moveToElement(element).doubleClick().build().perform();
+		}
 	}
+	
+	private static ArrayList<String> getUsers() {
+		ArrayList<String> users = new ArrayList<>();
+		try {
+			Scanner scanFile = new Scanner(new File("users"));
+			
+			while (scanFile.hasNextLine())
+				users.add(scanFile.nextLine());
+			scanFile.close();		
+		} catch (FileNotFoundException e) {
+			exitWithErrorMessage("File not found... please add a users.txt file in the project directory.");
+		}
+		return users;
+	}
+	
 	
 	private static void setup() { 
 		driver.get("http://www.instagram.com");
